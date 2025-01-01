@@ -1,65 +1,73 @@
-
+import 'package:day_3/profilescreen.dart';
 import 'package:day_3/registration.dart';
+import 'package:day_3/services/firebaseauthservice.dart';
 import 'package:flutter/material.dart';
 
 
-class  Login extends StatefulWidget {
-  const Login ({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<Login> {
+  // Define TextEditingControllers for each field to manage input values
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  // Define GlobalKey for Form validation
   final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
+    // Clean up the controllers when the widget is disposed
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  void _login() {
-    if (_formKey.currentState!.validate()) {
-      // Add login logic here
-      print("Login Successful");
-      // Navigate to another screen on successful login
-    }
-  }
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Login'),
-        backgroundColor: const Color.fromARGB(255, 127, 32, 156),
+        backgroundColor: Color.fromARGB(255, 127, 32, 156),
       ),
       body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
+        onTap: () {
+          // Close the keyboard when tapping outside the TextField
+          FocusScope.of(context).unfocus();
+        },
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Form(
-            key: _formKey,
+            key: _formKey, // Form key for validation
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 50),
+                SizedBox(height: 50), // Spacing from the top
                 const Text(
                   'Login',
                   style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
-                // Username Field
+                // Username TextField with validation
                 TextFormField(
                   controller: _usernameController,
                   decoration: InputDecoration(
-                    labelText: 'Username',
+                    labelText: 'Email',
                     prefixIcon: const Icon(Icons.person),
                     filled: true,
-                    fillColor: const Color.fromARGB(255, 241, 212, 240),
+                    fillColor: Color.fromARGB(255, 241, 212, 240),
                     enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide.none,
                     ),
@@ -72,16 +80,20 @@ class _LoginPageState extends State<Login> {
                   },
                 ),
                 const SizedBox(height: 15),
-                // Password Field
+                // Password TextField with validation
                 TextFormField(
                   controller: _passwordController,
-                  obscureText: true,
+                  obscureText: true, // to hide the password
                   decoration: InputDecoration(
                     labelText: 'Password',
                     prefixIcon: const Icon(Icons.lock),
                     filled: true,
-                    fillColor: const Color.fromARGB(255, 241, 212, 240),
+                    fillColor: Color.fromARGB(255, 241, 212, 240),
                     enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide.none,
                     ),
@@ -98,19 +110,32 @@ class _LoginPageState extends State<Login> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     fixedSize: const Size(double.infinity, 40),
-                    backgroundColor: const Color.fromARGB(255, 127, 32, 156),
+                    backgroundColor: Color.fromARGB(255, 127, 32, 156),
                   ),
-                  onPressed: _login,
-                  child: const Text('Login'),
+                  onPressed: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    // Navigate to the Sign Up page
+                    await login(
+                        email: _usernameController.text,
+                        password: _passwordController.text,
+                        context: context);
+                    setState(() {
+                      isLoading = false;
+                    });
+                  }, // Trigger login when pressed
+                  child:isLoading? CircularProgressIndicator(): const Text(
+                    'Login',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
                 const SizedBox(height: 15),
-                // Forgot Password
+                // Forgot Password Button
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Registration()),
-                    );
+                    // Navigate to the forgot password screen
+                    // You can create another screen or show a dialog
                   },
                   child: const Text(
                     'Forgot Password?',
@@ -120,13 +145,14 @@ class _LoginPageState extends State<Login> {
                   ),
                 ),
                 const SizedBox(height: 15),
-                // Sign Up
+                // Sign Up Button (to navigate to Sign Up page)
                 TextButton(
                   onPressed: () {
+                    // Navigate to the Sign Up page
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Registration()),
-                    );
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Registration()));
                   },
                   child: const Text(
                     'Don\'t have an account? Sign Up',

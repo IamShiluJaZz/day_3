@@ -1,10 +1,22 @@
-
 import 'package:day_3/login.dart';
+import 'package:day_3/services/firebaseauthservice.dart';
 import 'package:flutter/material.dart';
 
+class Registration extends StatefulWidget {
+   Registration({super.key});
 
-class Registration extends StatelessWidget {
-  const Registration({super.key});
+  @override
+  State<Registration> createState() => _RegistrationState();
+}
+
+class _RegistrationState extends State<Registration> {
+  TextEditingController usernameController = TextEditingController();
+
+  TextEditingController passwordController = TextEditingController();
+
+  TextEditingController emailController = TextEditingController();
+
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +45,7 @@ class Registration extends StatelessWidget {
             // Username Field
             TextField(
               focusNode: usernameFocusNode,
+              controller: usernameController,
               decoration: InputDecoration(
                 labelText: 'Username',
                 prefixIcon: const Icon(Icons.person),
@@ -48,6 +61,7 @@ class Registration extends StatelessWidget {
             // Email Field
             TextField(
               focusNode: emailFocusNode,
+              controller: emailController,
               decoration: InputDecoration(
                 labelText: 'Email',
                 prefixIcon: const Icon(Icons.email),
@@ -63,6 +77,7 @@ class Registration extends StatelessWidget {
             // Password Field
             TextField(
               focusNode: passwordFocusNode,
+              controller: passwordController,
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Password',
@@ -79,6 +94,7 @@ class Registration extends StatelessWidget {
             // Confirm Password Field
             TextField(
               focusNode: confirmPasswordFocusNode,
+              controller: passwordController,
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Confirm Password',
@@ -98,10 +114,20 @@ class Registration extends StatelessWidget {
                 fixedSize: const Size(double.infinity, 40),
                 backgroundColor: const Color.fromARGB(255, 127, 32, 156),
               ),
-              onPressed: () {
+              onPressed: () async{
+                setState(() {
+                  isLoading = true;
+                });
+                await signup(
+                    username: usernameController.text,
+                    email: emailController.text,
+                    password: passwordController.text,context: context);
                 // Add Sign-Up Logic Here
+                setState(() {
+                  isLoading = false;
+                });
               },
-              child: const Text('Sign Up'),
+              child: isLoading?CircularProgressIndicator(): Text('Sign Up'),
             ),
             const SizedBox(height: 15),
             // Already have an account
@@ -110,7 +136,7 @@ class Registration extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const Login()),
-                )
+                );
               },
               child: const Text(
                 'Already have an account? Login',

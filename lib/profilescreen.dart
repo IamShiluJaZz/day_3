@@ -16,8 +16,8 @@ class Profilepage extends StatelessWidget {
         ),
         Text("Shilu",style: TextStyle(color: Colors.amber),),
         Text("MCA",style:TextStyle(color: Colors.blue,fontWeight: FontWeight.bold),),
-        Divider(color: Colors.white,indent: 100,endIndent: 200)
-        
+        Divider(color: Colors.white,indent: 100,endIndent: 100)
+
 
 
 
